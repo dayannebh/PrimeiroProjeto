@@ -24,14 +24,24 @@ namespace PrimeiroProjeto.Repositorios
 
         public Pessoa GetByNome(string nome)
         {
-            Pessoa resultado = new Pessoa
-            {
-                Id = Guid.NewGuid(),
-                Nome = "Dayanne",
-                Documento = "12345678911"
-            };
+            const string sql = @"select
+                id, 
+                nome,
+                documento
+            from 
+               pessoas
+            where 
+               nome = @nome";
 
-            return resultado;
+            var param = new DynamicParameters();
+
+            param.Add("@nome", nome, DbType.String);
+
+            using var connection = new SqlConnection("Server=(localdb)\\servidor;Database=primeiroProjeto");
+
+            var value = connection.QueryFirstOrDefault<Pessoa>(sql, param);
+
+            return value;
         }
 
         public Guid CriarPessoa(Pessoa pessoa)
